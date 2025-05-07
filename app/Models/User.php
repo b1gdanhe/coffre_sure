@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -10,7 +12,7 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasUuids;
 
     /**
      * The attributes that are mass assignable.
@@ -21,6 +23,12 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'master_key_hash',
+        'salt',
+        'encryption_key',
+        'mfa_enabled',
+        'mfa_secret',
+        'status',
     ];
 
     /**
@@ -31,6 +39,10 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'master_key_hash',
+        'salt',
+        'encryption_key',
+        'mfa_secret',
     ];
 
     /**
@@ -43,6 +55,39 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'last_login' => 'datetime',
+            'mfa_enabled' => 'boolean',
         ];
+    }
+    /**
+     * Get the vaults for the user.
+     */
+    public function vaults()
+    {
+        return $this->hasMany(Vault::class);
+    }
+
+    /**
+     * Get the devices for the user.
+     */
+    public function devices()
+    {
+        return $this->hasMany(Device::class);
+    }
+
+    /**
+     * Get the access logs for the user.
+     */
+    public function accessLogs()
+    {
+        return $this->hasMany(AccessLog::class);
+    }
+
+    /**
+     * Get the shared vaults for this user.
+     */
+    public function sharedVaults()
+    {
+        return $this->hasMany(SharedVault::class);
     }
 }

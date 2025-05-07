@@ -14,6 +14,11 @@ const mainNavItems: NavItem[] = [
         href: '/dashboard',
         icon: LayoutGrid,
     },
+     {
+        title: 'Coffre fort',
+        href: '/coffre-fort',
+        icon: LayoutGrid,
+    },
 ];
 
 const footerNavItems: NavItem[] = [

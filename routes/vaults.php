@@ -1,0 +1,8 @@
+<?php
+
+use App\Http\Controllers\VaultController;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Route;
+
+
+Route::get('coffre-fort', [VaultController::class, 'index'])->middleware(['auth', 'verified'])->name('volts.index');

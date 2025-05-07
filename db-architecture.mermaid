@@ -1,0 +1,115 @@
+classDiagram
+    User "1" -- "*" Vault
+    Vault "1" -- "*" Entry
+    Entry "1" -- "*" CustomField
+    Entry "*" -- "*" Tag
+    User "1" -- "*" Device
+    User "1" -- "*" AccessLog
+    Vault "1" -- "*" SharedVault
+    SharedVault "*" -- "1" User
+
+    class User {
+        +id: int
+        +email: string
+        +password_hash: string
+        +master_key_hash: string
+        +salt: string
+        +encryption_key: string
+        +created_at: datetime
+        +updated_at: datetime
+        +last_login: datetime
+        +mfa_enabled: boolean
+        +mfa_secret: string
+        +status: enum
+        +registerUser()
+        +authenticateUser()
+        +updateProfile()
+        +enableMFA()
+    }
+
+    class Vault {
+        +id: int
+        +user_id: int
+        +name: string
+        +description: string
+        +icon: string
+        +created_at: datetime
+        +updated_at: datetime
+        +encryption_key: string
+        +is_default: boolean
+        +createEntry()
+        +updateVault()
+        +deleteVault()
+    }
+
+    class Entry {
+        +id: int
+        +vault_id: int
+        +title: string
+        +username: string
+        +password: string
+        +url: string
+        +notes: text
+        +icon: string
+        +created_at: datetime
+        +updated_at: datetime
+        +last_used: datetime
+        +category: enum
+        +favorite: boolean
+        +generatePassword()
+        +updateEntry()
+        +deleteEntry()
+    }
+
+    class CustomField {
+        +id: int
+        +entry_id: int
+        +field_name: string
+        +field_value: string
+        +field_type: enum
+        +is_encrypted: boolean
+        +created_at: datetime
+        +updated_at: datetime
+    }
+
+    class Tag {
+        +id: int
+        +name: string
+        +color: string
+        +created_at: datetime
+    }
+
+    class Device {
+        +id: int
+        +user_id: int
+        +name: string
+        +device_type: enum
+        +last_active: datetime
+        +created_at: datetime
+        +auth_token: string
+        +ip_address: string
+        +user_agent: string
+        +is_trusted: boolean
+    }
+
+    class AccessLog {
+        +id: int
+        +user_id: int
+        +action: enum
+        +details: string
+        +ip_address: string
+        +created_at: datetime
+        +device_info: string
+        +status: enum
+    }
+
+    class SharedVault {
+        +id: int
+        +vault_id: int
+        +user_id: int
+        +permission_level: enum
+        +created_at: datetime
+        +updated_at: datetime
+        +invitation_status: enum
+        +encrypted_key: string
+    }
