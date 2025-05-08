@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\Vault\VaultCollection;
+use App\Http\Resources\Vault\VaultResource;
 use Inertia\Inertia;
 use App\Models\Vault;
 use Illuminate\Http\Request;
@@ -14,7 +16,7 @@ class VaultController extends Controller
     public function index()
     {
         return Inertia::render('vaults/Index', [
-            'status' => Vault::all(),
+            'vaults' => VaultResource::collection(Vault::all()) ,
         ]);
     }
 
