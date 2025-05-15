@@ -5,6 +5,7 @@ import { Link, usePage } from '@inertiajs/vue3';
 
 defineProps<{
     items: NavItem[];
+    groupeLabel : String
 }>();
 
 const page = usePage<SharedData>();
@@ -12,7 +13,7 @@ const page = usePage<SharedData>();
 
 <template>
     <SidebarGroup class="px-2 py-0">
-        <SidebarGroupLabel>Platform</SidebarGroupLabel>
+        <SidebarGroupLabel>{{ groupeLabel }}</SidebarGroupLabel>
         <SidebarMenu>
             <SidebarMenuItem v-for="item in items" :key="item.title">
                 <SidebarMenuButton 

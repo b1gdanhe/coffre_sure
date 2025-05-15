@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AppLayout from '@/layouts/AppLayout.vue';
+import AdminLayout from '@/layouts/AdminLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { type User } from '@/types/vaults';
 import { Head } from '@inertiajs/vue3';
@@ -24,7 +24,7 @@ defineProps<Props>();
 <template>
     <Head title="Coffre fort" />
 
-    <AppLayout :breadcrumbs="breadcrumbs">
+    <AdminLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
             <Table>
                 <TableCaption>Liste de mes coffres</TableCaption>
@@ -48,5 +48,5 @@ defineProps<Props>();
                 </TableBody>
             </Table>
         </div>
-    </AppLayout>
+    </AdminLayout>
 </template>

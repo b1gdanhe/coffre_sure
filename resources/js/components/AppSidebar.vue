@@ -6,13 +6,13 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { LayoutGrid, User, User2, Vault } from 'lucide-vue-next';
+import { LayoutGrid, User, User2, Vault, Logs } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
-const mainNavItems: NavItem[] = [
+const settingItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: '/dashboard',
+        href: 'admin/dashboard',
         icon: LayoutGrid,
     },
     {
@@ -32,6 +32,14 @@ const mainNavItems: NavItem[] = [
     },
 ];
 
+const logItems: NavItem[] = [
+    {
+        title: 'Activités',
+        href: '/activites',
+        icon: Logs,
+    },
+];
+
 const footerNavItems: NavItem[] = [
     // {
     //     title: 'Github Repo',
@@ -48,25 +56,30 @@ const footerNavItems: NavItem[] = [
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
                         <Link :href="route('dashboard')">
-                            <AppLogo />
+                        <AppLogo />
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarHeader>
-        <Select>
-            <SelectTrigger>
-                <SelectValue placeholder="Select a fruit" />
-            </SelectTrigger>
-            <SelectContent>
-                <SelectGroup>
-                    <SelectLabel>Fruits</SelectLabel>
-                    <SelectItem value="apple"> Apple </SelectItem>
-                </SelectGroup>
-            </SelectContent>
-        </Select>
+
+        <!-- <div class="  p-2">
+            <Select class="">
+                <SelectTrigger>
+                    <SelectValue placeholder="Coffre" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectGroup>
+                        <SelectLabel>Fruits</SelectLabel>
+                        <SelectItem value="apple"> Apple </SelectItem>
+                    </SelectGroup>
+                </SelectContent>
+            </Select>
+        </div> -->
+
         <SidebarContent>
-            <NavMain :items="mainNavItems" />
+            <NavMain :items="settingItems" :groupe-label="'Paramètres'" />
+            <NavMain :items="logItems" :groupe-label="'Journals'" />
         </SidebarContent>
 
         <SidebarFooter>

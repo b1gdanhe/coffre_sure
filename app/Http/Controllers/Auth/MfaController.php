@@ -3,52 +3,81 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Models\User;
+use Inertia\Inertia;
 use App\Models\AccessLog;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-// class  MfaController extends Controller
-// {
-//     protected  $loginController;
-//     // MfaController.php
-//     public function verifyMfa(Request $request)
-//     {
-//         $validator = Validator::make($request->all(), [
-//             'code' => 'required|string|size:6',
-//         ]);
+class  MfaController extends Controller
+{
+    protected  $loginController;
 
-//         if ($validator->fails()) {
-//             return response()->json(['errors' => $validator->errors()], 422);
-//         }
+    public function sendMfaCode()
+    {
+        if (!session()->has('pending_user_id')) {
+            return redirect()->route('login')
+                ->withErrors(['email' => 'Session expirée. Veuillez vous reconnecter.']);
+        }
 
-//         $userId = session('pending_user_id');
-//         if (!$userId) {
-//             return response()->json(['message' => 'Session expirée.'], 401);
-//         }
+        return Inertia::render('auth/SendMfaCode');
+    }
+    // MfaController.php
+    public function verifyMfa(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|string|size:6',
+        ]);
 
-//         $user = User::find($userId);
+        $userId = session('pending_user_id');
 
-//         // Vérifier le code MFA avec Google Authenticator ou autre bibliothèque TOTP
-//         $ga = new GoogleAuthenticator();
-//         if (!$ga->verifyCode($user->mfa_secret, $request->code)) {
-//             AccessLog::create([
-//                 'id' => (string) Str::uuid(),
-//                 'user_id' => $user->id,
-//                 'action' => 'failed_login',
-//                 'details' => 'Invalid MFA code',
-//                 'ip_address' => $request->ip(),
-//                 'device_info' => $request->userAgent(),
-//                 'status' => 'failed'
-//             ]);
+        if (!$userId) {
+            return redirect()->route('login')
+                ->withErrors(['email' => 'Session expirée. Veuillez vous reconnecter.']);
+        }
 
-//             return response()->json(['message' => 'Code d\'authentification invalide.'], 401);
-//         }
+        $user = User::findOrFail($userId);
 
-//         // Effacer la session temporaire
-//         session()->forget('pending_user_id');
+        // Vérifier le code MFA (à implémenter selon votre solution 2FA)
+        if (!$this->validateMfaCode($user, $request->code)) {
+            return back()->withErrors(['code' => 'Code d\'authentification invalide.']);
+        }
 
-//         return $this->loginController->completeLogin($user, $request);
-//     }
-// }
+        // Authentifier l'utilisateur manuellement
+        Auth::login($user);
+        session()->forget('pending_user_id');
+
+        return $this->loginController->completeLogin($user, $request);
+    }
+
+    protected function validateMfaCode(User $user, $code)
+    {
+        // Implémentez ici la validation du code MFA
+        // (Google Authenticator, SMS, Email, etc.)
+
+        // Exemple avec Google Authenticator:
+        // return app(Google2FA::class)->verifyKey($user->two_factor_secret, $code);
+
+        // Retour temporaire pour l'exemple
+        return $code === '123456';
+    }
+
+    public function resendMfaCode(Request $request)
+    {
+        $userId = session('pending_user_id');
+
+        if (!$userId) {
+            return redirect()->route('login')
+                ->withErrors(['email' => 'Session expirée. Veuillez vous reconnecter.']);
+        }
+
+        $user = User::findOrFail($userId);
+
+        // Envoyer un nouveau code
+        $this->sendMfaCode($user);
+
+        return back()->with('status', 'Un nouveau code d\'authentification a été envoyé à votre adresse email.');
+    }
+}
