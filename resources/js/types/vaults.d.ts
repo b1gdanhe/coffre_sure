@@ -82,6 +82,13 @@ export enum ActionType {
     SUSPENDED = 'suspended',
     PENDING = 'pending'
   }
+  export interface Role {
+    id: string;
+    name: string;
+    description: string;
+    created_at: string;
+    updated_at: string;
+  }
   
   // User-related interfaces
   export interface User {

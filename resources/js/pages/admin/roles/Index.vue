@@ -1,21 +1,20 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
-import { type User } from '@/types/vaults';
+import { type Role } from '@/types/vaults';
 import { Head } from '@inertiajs/vue3';
-import { KeyRound } from 'lucide-vue-next';
 
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Utilisateurs',
-        href: '/utilisateurs',
+        title: 'Roles',
+        href: '/roles',
     },
 ];
 
 interface Props {
-    users: Array<User>;
+    roles: Array<Role>;
 }
 
 defineProps<Props>();
@@ -27,23 +26,24 @@ defineProps<Props>();
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
             <Table>
-                <TableCaption>Liste de mes coffres</TableCaption>
+                <TableCaption>Liste des roles</TableCaption>
                 <TableHeader>
                     <TableRow>
                         <TableHead class="w-[100px]"> # </TableHead>
-                        <TableHead class="w-[100px]"> Coffre </TableHead>
+                        <TableHead class="w-[100px]"> Nom </TableHead>
                         <TableHead class="text-right"> Description </TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    <TableRow v-for="user in users" :key="user.id">
+                    <TableRow v-for="role in roles" :key="role.id">
                         <TableCell class="font-medium">
-                            <component :is="KeyRound" />
+                            {{ role.id }}
                         </TableCell>
+
                         <TableCell class="font-medium">
-                            {{ user.name }}
+                            {{ role.name }}
                         </TableCell>
-                        <TableCell class="text-right">{{ user.id }}</TableCell>
+                        <TableCell class="text-right">{{ role.description }}</TableCell>
                     </TableRow>
                 </TableBody>
             </Table>

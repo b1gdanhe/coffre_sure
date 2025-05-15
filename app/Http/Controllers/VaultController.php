@@ -17,7 +17,7 @@ class VaultController extends Controller
      */
     public function index()
     {
-        return Inertia::render('vaults/Index', [
+        return Inertia::render('admin/vaults/Index', [
             'vaults' => VaultResource::collection(Vault::where(
                 'user_id',
                 \request()->user()->id
