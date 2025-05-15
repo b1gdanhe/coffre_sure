@@ -169,7 +169,7 @@ class DatabaseSeeder extends Seeder
         DB::table('vaults')->insert([
             'id' => $defaultVaultId,
             'user_id' => $userId,
-            'name' => 'Coffre par défaut',
+            'name' => 'Mon cofrre',
             'description' => 'Coffre-fort par défaut pour toutes vos informations',
             'icon' => 'vault-default',
             'encryption_key' => $encryptionKey,

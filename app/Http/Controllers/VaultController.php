@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\Vault\VaultCollection;
-use App\Http\Resources\Vault\VaultResource;
+use App\Models\User;
 use Inertia\Inertia;
 use App\Models\Vault;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Http\Resources\Vault\VaultResource;
+use App\Http\Resources\Vault\VaultCollection;
 
 class VaultController extends Controller
 {
@@ -17,9 +19,37 @@ class VaultController extends Controller
     {
         return Inertia::render('vaults/Index', [
             'vaults' => VaultResource::collection(Vault::where(
-                'user_id', \request()->user()->id
-            )->get()) 
+                'user_id',
+                \request()->user()->id
+            )->get())
         ]);
+    }
+
+    public function createDefaultVault(User $user, $encryptionKey)
+    {
+        // Générer une clé de chiffrement pour le coffre-fort
+        $vaultKey = bin2hex(random_bytes(32));
+
+        // Chiffrer la clé du coffre-fort avec la clé de l'utilisateur
+        $encryptedVaultKey = openssl_encrypt(
+            $vaultKey,
+            'aes-256-gcm',
+            $encryptionKey,
+            0,
+            random_bytes(16),
+            $tag
+        );
+
+        // Créer le coffre-fort par défaut
+        $vault = Vault::create([
+            'user_id' => $user->id,
+            'name' => 'Mon coffre',
+            'description' => 'Votre coffre-fort par défaut',
+            'encryption_key' => $encryptedVaultKey,
+            'is_default' => true
+        ]);
+
+        return $vault;
     }
 
     /**
