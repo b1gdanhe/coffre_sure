@@ -8,11 +8,11 @@ import { Head, useForm } from '@inertiajs/vue3';
 import { LoaderCircle } from 'lucide-vue-next';
 
 const form = useForm({
-    password: '',
+    code: '',
 });
 
 const submit = () => {
-    form.post(route('password.confirm'), {
+    form.post(route('mfa.verify'), {
         onFinish: () => {
             form.reset();
         },
@@ -21,30 +21,25 @@ const submit = () => {
 </script>
 
 <template>
-    <AuthLayout title="Confirm your password" description="This is a secure area of the application. Please confirm your password before continuing.">
+    <AuthLayout title="Verification"
+        description="Veuillez entrer le code d\'authentification à six chiffres que nous venons d\'envoyer à votre adresse email.">
+
         <Head title="Confirm password" />
 
         <form @submit.prevent="submit">
             <div class="space-y-6">
                 <div class="grid gap-2">
-                    <Label htmlFor="password">Password</Label>
-                    <Input
-                        id="password"
-                        type="password"
-                        class="mt-1 block w-full"
-                        v-model="form.password"
-                        required
-                        autocomplete="current-password"
-                        autofocus
-                    />
+                    <Label htmlFor="password">Code</Label>
+                    <Input id="code" type="code" class="mt-1 block w-full" v-model="form.code" required
+                        autocomplete="current-password" autofocus />
 
-                    <InputError :message="form.errors.password" />
+                    <InputError :message="form.errors.code" />
                 </div>
 
                 <div class="flex items-center">
                     <Button class="w-full" :disabled="form.processing">
                         <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
-                        Confirm Password
+                        Veirfier
                     </Button>
                 </div>
             </div>
