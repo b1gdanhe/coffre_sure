@@ -44,7 +44,7 @@ class MfaCodeMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'mails.auth.mfa-code',
+            markdown: 'mails.auth.mfa-code',
             with: [
                 'code' => $this->code,
                 'name' => $this->user->name,

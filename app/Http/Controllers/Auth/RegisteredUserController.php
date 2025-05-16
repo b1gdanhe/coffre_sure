@@ -49,7 +49,7 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return to_route('dashboard');
+        return to_route('user.dashboard');
     }
 
     public function store(Request $request)
@@ -57,8 +57,7 @@ class RegisteredUserController extends Controller
         $validator = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            // 'master_password' => 'required|string|min:12',
-             'password' => 'required|string|min:12',
+             'password' => 'required|string|min:6',
         ]);
 
         // Générer un sel (salt) unique
@@ -106,6 +105,6 @@ class RegisteredUserController extends Controller
             'status' => 'success'
         ]);
 
-        return to_route('dashboard');
+        return to_route('user.dashboard');
     }
 }

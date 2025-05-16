@@ -7,6 +7,8 @@ use Inertia\Inertia;
 use App\Models\AccessLog;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Services\LoginService;
+use App\Services\EmailMfaService;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -14,6 +16,15 @@ use Illuminate\Support\Facades\Validator;
 class  MfaController extends Controller
 {
     protected  $loginController;
+    private EmailMfaService $emailMfaService;
+    private LoginService $loginService;
+
+
+    public function __construct(EmailMfaService $emailMfaService, LoginService $loginService)
+    {
+        $this->emailMfaService = $emailMfaService;
+        $this->loginService = $loginService;
+    }
 
     public function sendMfaCode()
     {
@@ -41,7 +52,7 @@ class  MfaController extends Controller
         $user = User::findOrFail($userId);
 
         // Vérifier le code MFA (à implémenter selon votre solution 2FA)
-        if (!$this->validateMfaCode($user, $request->code)) {
+        if (!$this->emailMfaService->validateMfaCode($user, $request->code)) {
             return back()->withErrors(['code' => 'Code d\'authentification invalide.']);
         }
 
@@ -49,19 +60,7 @@ class  MfaController extends Controller
         Auth::login($user);
         session()->forget('pending_user_id');
 
-        return $this->loginController->completeLogin($user, $request);
-    }
-
-    protected function validateMfaCode(User $user, $code)
-    {
-        // Implémentez ici la validation du code MFA
-        // (Google Authenticator, SMS, Email, etc.)
-
-        // Exemple avec Google Authenticator:
-        // return app(Google2FA::class)->verifyKey($user->two_factor_secret, $code);
-
-        // Retour temporaire pour l'exemple
-        return $code === '123456';
+        return $this->loginService->completeLogin($user, $request);
     }
 
     public function resendMfaCode(Request $request)

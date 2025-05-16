@@ -12,7 +12,7 @@ Route::get('admin/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('admin.dashboard');
 
 Route::get('user/dashboard', function () {
-    return Inertia::render('Dashboard');
+    return Inertia::render('users/Dashboard');
 })->middleware(['auth', 'verified'])->name('user.dashboard');
 
 

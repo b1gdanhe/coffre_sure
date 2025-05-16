@@ -27,11 +27,12 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
     breadcrumbs: () => [],
+    logoUrl: String,
 });
 
 const page = usePage();
 const auth = computed(() => page.props.auth);
-
+console.log(auth.value);
 const isCurrentRoute = computed(() => (url: string) => page.url === url);
 
 const activeItemStyles = computed(
@@ -47,16 +48,16 @@ const mainNavItems: NavItem[] = [
 ];
 
 const rightNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/vue-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits',
-        icon: BookOpen,
-    },
+    // {
+    //     title: 'Repository',
+    //     href: 'https://github.com/laravel/vue-starter-kit',
+    //     icon: Folder,
+    // },
+    // {
+    //     title: 'Documentation',
+    //     href: 'https://laravel.com/docs/starter-kits',
+    //     icon: BookOpen,
+    // },
 ];
 </script>
 
@@ -108,7 +109,7 @@ const rightNavItems: NavItem[] = [
                     </Sheet>
                 </div>
 
-                <Link :href="route('dashboard')" class="flex items-center gap-x-2">
+                <Link :href="route('admin.dashboard')" class="flex items-center gap-x-2">
                     <AppLogo />
                 </Link>
 

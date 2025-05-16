@@ -134,7 +134,7 @@ class DatabaseSeeder extends Seeder
         $userData = [
             [
                 'name' => 'Admin User',
-                'email' => 'admin@coffresure.com',
+                'email' => 'eliedanhin@gmail.com',
                 'password' => Hash::make('password123'),
                 'status' => 'active',
                 'mfa_enabled' => true,
@@ -143,7 +143,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Test User',
-                'email' => 'user@coffresure.com',
+                'email' => 'elie2@gmail.com',
                 'password' => Hash::make('password123'),
                 'status' => 'active',
                 'mfa_enabled' => false,
