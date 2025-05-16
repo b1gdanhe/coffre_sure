@@ -14,7 +14,6 @@ class RedirectionService
         if ($user->hasRole('manager')) {
             return 'manager.dashboard';
         }
-
         return 'user.dashboard';
     }
 }

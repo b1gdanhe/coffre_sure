@@ -26,14 +26,20 @@ export interface SharedData extends PageProps {
     sidebarOpen: boolean;
 }
 
-export interface User {
-    id: number;
+  export interface User {
+    id: string;
     name: string;
     email: string;
-    avatar?: string;
     email_verified_at: string | null;
+    master_key_hash: string;
+    salt: string;
+    encryption_key: string;
+    last_login: string | null;
+    mfa_enabled: boolean;
+    mfa_secret: string | null;
+    status: UserStatus;
     created_at: string;
     updated_at: string;
-}
+  }
 
 export type BreadcrumbItemType = BreadcrumbItem;

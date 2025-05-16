@@ -5,9 +5,12 @@ import NavUser from '@/components/NavUser.vue';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/vue3';
-import { LayoutGrid, User, User2, Vault, Logs } from 'lucide-vue-next';
+import { Link, usePage } from '@inertiajs/vue3';
+import { LayoutGrid, User, User2, Vault, Logs, LockKeyhole } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
+import { computed } from 'vue';
+
+
 
 const settingItems: NavItem[] = [
     {
@@ -40,6 +43,29 @@ const logItems: NavItem[] = [
     },
 ];
 
+const userItems: NavItem[] = [
+    {
+        title: 'Identifiants',
+        href: '/identifiants',
+        icon: LockKeyhole,
+    },
+];
+const page = usePage();
+const auth = computed(() => page.props.auth);
+const getHomeLinkByRole = () => {
+    // Vérifier si l'utilisateur a certains rôles
+    if (auth.value.user.roles.some(role => role.name === 'admin')) {
+        return route('admin.dashboard');
+    } else {
+        return route('user.dashboard');
+    }
+};
+
+const isAdmin = () => {
+    return auth.value.user.roles.some(role => role.name === 'admin')
+};
+
+
 const footerNavItems: NavItem[] = [
     // {
     //     title: 'Github Repo',
@@ -55,7 +81,7 @@ const footerNavItems: NavItem[] = [
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
-                        <Link :href="route('admin.dashboard')">
+                        <Link :href="getHomeLinkByRole()">
                         <AppLogo />
                         </Link>
                     </SidebarMenuButton>
@@ -63,23 +89,11 @@ const footerNavItems: NavItem[] = [
             </SidebarMenu>
         </SidebarHeader>
 
-        <!-- <div class="  p-2">
-            <Select class="">
-                <SelectTrigger>
-                    <SelectValue placeholder="Coffre" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectGroup>
-                        <SelectLabel>Fruits</SelectLabel>
-                        <SelectItem value="apple"> Apple </SelectItem>
-                    </SelectGroup>
-                </SelectContent>
-            </Select>
-        </div> -->
 
         <SidebarContent>
-            <NavMain :items="settingItems" :groupe-label="'Paramètres'" />
-            <NavMain :items="logItems" :groupe-label="'Journals'" />
+            <NavMain :items="settingItems" groupe-label="Paramètres" v-if="isAdmin()" />
+            <NavMain :items="logItems" groupe-label="Journals" v-if="isAdmin()" />
+            <NavMain :items="userItems" groupe-label="" v-if="!isAdmin()" />
         </SidebarContent>
 
         <SidebarFooter>

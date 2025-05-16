@@ -9,9 +9,19 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Resources\Vault\VaultResource;
 use App\Http\Resources\Vault\VaultCollection;
+use App\Services\VaultService;
 
 class VaultController extends Controller
 {
+
+    private VaultService $vaultService;
+
+
+    public function __construct(VaultService $vaultService)
+    {
+        $this->vaultService = $vaultService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -50,6 +60,15 @@ class VaultController extends Controller
         ]);
 
         return $vault;
+    }
+
+    public function switchVault(Request $request)
+    {
+        $request->validate([
+            'vault_id' => 'required|exists:coffres,id'
+        ]);
+        $this->vaultService->switch($request->vault_id);
+        return back()->with('success', 'Coffre changé avec succès.');
     }
 
     /**

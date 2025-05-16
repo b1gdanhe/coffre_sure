@@ -92,4 +92,19 @@ class User extends Authenticatable  implements MustVerifyEmail
     {
         return $this->hasMany(SharedVault::class);
     }
+
+    public function getActiveVault()
+    {
+        $activeId = session('active_vault_id');
+        if ($activeId) {
+            return $this->vaults()->find($activeId);
+        }
+        $firstVault = $this->vaults()->where('is_default', true)->first();
+        if ($firstVault) {
+            session(['active_vault_id' => $firstVault->id]);
+            return $firstVault;
+        }
+
+        return null;
+    }
 }

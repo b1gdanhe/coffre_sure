@@ -17,7 +17,7 @@ class PasswordController extends Controller
      */
     public function edit(): Response
     {
-        return Inertia::render('settings/Password');
+        return Inertia::render(auth()->user()->hasRole('admin')  ? 'settings/Password' : 'users/settings/Password');
     }
 
     /**

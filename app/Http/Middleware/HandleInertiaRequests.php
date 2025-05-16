@@ -44,13 +44,40 @@ class HandleInertiaRequests extends Middleware
             'name' => config('app.name'),
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
-                'user' => $request->user(),
+                'user' => $request->user() ? $request->user()->load('roles') : $request->user(),
             ],
             'ziggy' => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            'vaults' => function () use ($request) {
+                $user = $request->user();
+
+                if (!$user) {
+                    return null;
+                }
+
+                // Récupérer le coffre actif
+                $activeVault = $user->getActiveVault();
+
+                return [
+                    'currentVault' => $activeVault ? [
+                        'id' => $activeVault->id,
+                        'name' => $activeVault->name,
+                        'description' => $activeVault->description,
+                    ] : null,
+                    'list' => $user->vaults()
+                        ->select('vaults.id', 'vaults.name')
+                        ->get()
+                        ->map(function ($vault) {
+                            return [
+                                'id' => $vault->id,
+                                'name' => $vault->name,
+                            ];
+                        })
+                ];
+            },
         ];
     }
 }

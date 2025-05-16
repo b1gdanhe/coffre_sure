@@ -137,13 +137,13 @@ class DatabaseSeeder extends Seeder
                 'email' => 'eliedanhin@gmail.com',
                 'password' => Hash::make('password123'),
                 'status' => 'active',
-                'mfa_enabled' => true,
+                'mfa_enabled' => false,
                 'role' => 'admin'
 
             ],
             [
                 'name' => 'Test User',
-                'email' => 'elie2@gmail.com',
+                'email' => 'bigdanhe@gmail.com',
                 'password' => Hash::make('password123'),
                 'status' => 'active',
                 'mfa_enabled' => false,
