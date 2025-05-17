@@ -2,7 +2,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useInitials } from '@/composables/useInitials';
 import type { User } from '@/types';
-import { Vault } from '@/types/vaults';
+import { Vault } from '@/types';
 import { computed } from 'vue';
 
 interface Props {
@@ -14,7 +14,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
     showEmail: false,
 });
-
+console.log(props.currentVault)
 const { getInitials } = useInitials();
 
 </script>

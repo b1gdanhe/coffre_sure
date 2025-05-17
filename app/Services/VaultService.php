@@ -13,12 +13,17 @@ use Illuminate\Support\Facades\Auth;
 class VaultService
 {
 
-    public function switch(Vault $vault)
+    public function switch(string $vaultId)
     {
-        $user = auth()->user();
-        if (!$user->vaults()->where('coffre_id', $vault->id)->exists()) {
+        $user = Auth::user();
+        if (!$user->vaults()->where('id', $vaultId)->exists()) {
             return back()->with('error', 'Vous n\'avez pas accès à ce coffre.');
         }
-        session(['active_vault_id' => $vault->id]);
+        $user->vaults()->where('is_active', true)->update([
+            'is_active' => false
+        ]);
+        $user->vaults()->where('id', $vaultId)->update([
+            'is_active' => true
+        ]);
     }
 }

@@ -22,6 +22,7 @@ class Vault extends Model
         'icon',
         'encryption_key',
         'is_default',
+        'is_active',
     ];
 
     /**
@@ -40,6 +41,7 @@ class Vault extends Model
      */
     protected $casts = [
         'is_default' => 'boolean',
+        'is_active' => 'boolean',
     ];
 
     /**

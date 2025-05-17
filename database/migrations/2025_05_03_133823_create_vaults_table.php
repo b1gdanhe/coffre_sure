@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('icon')->nullable();
             $table->text('encryption_key');
             $table->boolean('is_default')->default(false);
+            $table->boolean('is_active')->default(false);
             $table->timestamps();
         });
     }

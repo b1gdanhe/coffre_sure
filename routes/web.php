@@ -20,5 +20,6 @@ Route::get('user/dashboard', function () {
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
 require __DIR__ . '/vaults.php';
+require __DIR__ . '/entries.php';
 require __DIR__ . '/roles.php';
 require __DIR__ . '/users.php';

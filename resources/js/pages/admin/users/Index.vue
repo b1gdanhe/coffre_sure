@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import { type BreadcrumbItem } from '@/types';
-import { type User } from '@/types/vaults';
+import { type User } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { KeyRound } from 'lucide-vue-next';
 

@@ -2,15 +2,11 @@
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { type NavItem } from '@/types';
+import type { NavItem, SharedData, User } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { LayoutGrid, User, User2, Vault, Logs, LockKeyhole } from 'lucide-vue-next';
+import { LayoutGrid, LockKeyhole, Logs, User2, User as UserIcon, Vault } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
-import { computed } from 'vue';
-
-
 
 const settingItems: NavItem[] = [
     {
@@ -26,7 +22,7 @@ const settingItems: NavItem[] = [
     {
         title: 'Utilisateurs',
         href: '/utilisateurs',
-        icon: User,
+        icon: UserIcon,
     },
     {
         title: 'Roles',
@@ -46,15 +42,15 @@ const logItems: NavItem[] = [
 const userItems: NavItem[] = [
     {
         title: 'Identifiants',
-        href: '/identifiants',
+        href: '/user/identifiants',
         icon: LockKeyhole,
     },
 ];
-const page = usePage();
-const auth = computed(() => page.props.auth);
+const page = usePage<SharedData>();
+const user = page.props.auth.user as User;
 const getHomeLinkByRole = () => {
     // Vérifier si l'utilisateur a certains rôles
-    if (auth.value.user.roles.some(role => role.name === 'admin')) {
+    if (user.roles.some((role) => role.name === 'admin')) {
         return route('admin.dashboard');
     } else {
         return route('user.dashboard');
@@ -62,9 +58,8 @@ const getHomeLinkByRole = () => {
 };
 
 const isAdmin = () => {
-    return auth.value.user.roles.some(role => role.name === 'admin')
+    return user.roles.some((role) => role.name === 'admin');
 };
-
 
 const footerNavItems: NavItem[] = [
     // {
@@ -82,13 +77,12 @@ const footerNavItems: NavItem[] = [
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
                         <Link :href="getHomeLinkByRole()">
-                        <AppLogo />
+                            <AppLogo />
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarHeader>
-
 
         <SidebarContent>
             <NavMain :items="settingItems" groupe-label="Paramètres" v-if="isAdmin()" />

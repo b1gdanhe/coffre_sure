@@ -220,6 +220,7 @@ class DatabaseSeeder extends Seeder
             'icon' => 'vault-default',
             'encryption_key' => $encryptionKey,
             'is_default' => true,
+            'is_active' => true,
             'created_at' => now()->subDays(30),
             'updated_at' => now()
         ]);
@@ -239,6 +240,7 @@ class DatabaseSeeder extends Seeder
                 'icon' => 'vault-' . ($index + 1),
                 'encryption_key' => $encryptionKey,
                 'is_default' => false,
+                'is_active' => false,
                 'created_at' => now()->subDays(rand(1, 29)),
                 'updated_at' => now()->subDays(rand(0, 5))
             ]);

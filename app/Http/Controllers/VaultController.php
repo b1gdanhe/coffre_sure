@@ -65,9 +65,9 @@ class VaultController extends Controller
     public function switchVault(Request $request)
     {
         $request->validate([
-            'vault_id' => 'required|exists:coffres,id'
+            'selectedVaultId' => 'required|exists:vaults,id'
         ]);
-        $this->vaultService->switch($request->vault_id);
+        $this->vaultService->switch($request->selectedVaultId);
         return back()->with('success', 'Coffre changé avec succès.');
     }
 
