@@ -5,7 +5,7 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import type { NavItem, SharedData, User } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { LayoutGrid, LockKeyhole, Logs, User2, User as UserIcon, Vault } from 'lucide-vue-next';
+import { LayoutGrid, LockKeyhole, Logs, User2, User as UserIcon, Vault, RectangleEllipsis } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const settingItems: NavItem[] = [
@@ -43,7 +43,7 @@ const userItems: NavItem[] = [
     {
         title: 'Identifiants',
         href: '/user/identifiants',
-        icon: LockKeyhole,
+        icon: RectangleEllipsis,
     },
 ];
 const page = usePage<SharedData>();
@@ -72,7 +72,7 @@ const footerNavItems: NavItem[] = [
 
 <template>
     <Sidebar collapsible="icon" variant="sidebar">
-        <SidebarHeader>
+        <SidebarHeader >
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>

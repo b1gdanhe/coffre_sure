@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useSidebar } from '@/components/ui/sidebar';
-import { type SharedData, type User } from '@/types';
-import { Vault } from '@/types';
+import CreateEntry from '@/pages/users/entries/Create.vue';
+import type { SharedData, User, Vault } from '@/types';
 import { useForm, usePage } from '@inertiajs/vue3';
 
 const page = usePage<SharedData>();
@@ -24,7 +24,9 @@ const changeVault = () => {
 </script>
 
 <template>
-    <div>
+    <div class="flex gap-2">
+        <CreateEntry />
+
         <Select v-model="form.selectedVaultId" @update:modelValue="changeVault">
             <SelectTrigger class="w-full">
                 <SelectValue :placeholder="currentVault?.name || 'Choisir le coffre'" />

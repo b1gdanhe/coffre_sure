@@ -6,5 +6,7 @@ use App\Http\Controllers\EntryController;
 use App\Http\Controllers\VaultController;
 
 
-Route::get('user/identifiants', [EntryController::class, 'index'])->middleware(['auth', 'verified', 'role:user'])->name('entries.index');
-
+Route::group(['middleware' => ['auth', 'verified', 'role:user']], function () {
+    Route::get('user/identifiants', [EntryController::class, 'index'])->name('entries.index');
+    Route::post('user/identifiants', [EntryController::class, 'store'])->name('entries.store');
+});

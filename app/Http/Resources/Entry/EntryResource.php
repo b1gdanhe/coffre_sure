@@ -26,7 +26,7 @@ class EntryResource extends JsonResource
             'url' => $this->url,
           //  'notes' => $this->when($this->shouldShowSensitiveData($request), $this->notes),
             'icon' => $this->icon,
-            'last_used' => $this->last_used,
+            'last_used' => now()->diffForHumans($this->last_used),
             'category' => $this->category,
             'favorite' => (bool) $this->favorite,
             'created_at' => $this->created_at,
