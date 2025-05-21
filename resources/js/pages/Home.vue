@@ -15,7 +15,7 @@ const name = page.props.name;
         <div class="absolute inset-0 z-0">
             <div class="absolute inset-0 bg-[url(/img/home.jpeg)] bg-cover bg-center"></div>
             <!-- Overlay avec dégradé radial -->
-            <div class="absolute inset-0 bg-gradient-to-r from-green-900/80 via-green-800/70 to-green-700/80"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-green-900/80 via-green-800/70 to-green-700/80 opacity-0.5"></div>
             <div class="bg-radial-gradient absolute inset-0"></div>
         </div>
 
@@ -26,7 +26,7 @@ const name = page.props.name;
                     <AppLogoIcon class="mr-2 size-8 fill-current text-white" />
                     {{ name }}
                 </Link>
-                <div>
+                <div class="flex gap-2">
                     <Link
                     v-if="$page.props.auth.user"
                     :href="route('user.dashboard')"
