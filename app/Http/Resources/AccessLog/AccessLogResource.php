@@ -4,6 +4,7 @@ namespace App\Http\Resources\AccessLog;
 
 use Illuminate\Http\Request;
 use App\Http\Resources\User\UserResource;
+use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class AccessLogResource extends JsonResource
@@ -23,7 +24,7 @@ class AccessLogResource extends JsonResource
             'ip_address' => $this->ip_address,
             'device_info' => $this->device_info,
             'status' => $this->status,
-            'created_at' => $this->created_at,
+            'created_at' => Carbon:: createFromFormat('Y-m-d H:i:s', $this->created_at)->format('d/m/Y H:i'),
             'user' => new UserResource($this->whenLoaded('user')),
         ];
     }

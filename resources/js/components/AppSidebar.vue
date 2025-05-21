@@ -34,7 +34,7 @@ const settingItems: NavItem[] = [
 const logItems: NavItem[] = [
     {
         title: 'Activités',
-        href: '/activites',
+        href: 'admin/journals',
         icon: Logs,
     },
 ];
