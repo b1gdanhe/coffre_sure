@@ -7,9 +7,11 @@ use Inertia\Inertia;
 use App\Models\Vault;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Services\VaultService;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\StoreVaultRequest;
 use App\Http\Resources\Vault\VaultResource;
 use App\Http\Resources\Vault\VaultCollection;
-use App\Services\VaultService;
 
 class VaultController extends Controller
 {
@@ -82,9 +84,21 @@ class VaultController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreVaultRequest $request)
     {
-        //
+        try {
+            $vault = $this->vaultService->createVault(
+                userId: Auth::user()->id,
+                data: $request->validated()
+            );
+
+            return redirect()->route('entries.index')->with('success', 'Entry created successfully');
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors(['error' => 'Erreur lors de la création du coffre: ' . $e->getMessage()]);
+        }
     }
 
     /**

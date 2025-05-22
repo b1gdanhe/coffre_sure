@@ -57,14 +57,14 @@ class RegisteredUserController extends Controller
         $validator = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-             'password' => 'required|string|min:6',
+            'password' => 'required|string|min:6',
         ]);
 
         // Générer un sel (salt) unique
         $salt = bin2hex(random_bytes(16));
 
         // Dériver la clé de chiffrement à partir du mot de passe maître
-        $masterKey = hash_pbkdf2('sha256', $request->master_password, $salt, 100000, 32, true);
+        $masterKey = hash_pbkdf2('sha256', $request->password, $salt, 100000, 32, true);
         $masterKeyHash = hash('sha256', $masterKey);
 
         // Générer une clé de chiffrement pour les données de l'utilisateur

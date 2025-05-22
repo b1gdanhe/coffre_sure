@@ -87,6 +87,8 @@ class EntryController extends Controller
         return redirect()->route('entries.index')->with('success', 'Entry created successfully');
     }
 
+    
+
     /**
      * Display the specified resource.
      */
