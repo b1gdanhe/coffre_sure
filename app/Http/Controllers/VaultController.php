@@ -92,6 +92,18 @@ class VaultController extends Controller
                 data: $request->validated()
             );
 
+            Inertia::share(
+                'vaults.list',
+                Auth::user()->vaults()
+                    ->select('vaults.id', 'vaults.name')
+                    ->get()
+                    ->map(function ($vault) {
+                        return [
+                            'id' => $vault->id,
+                            'name' => $vault->name,
+                        ];
+                    })
+            );
             return redirect()->route('entries.index')->with('success', 'Entry created successfully');
         } catch (\Exception $e) {
             return redirect()
