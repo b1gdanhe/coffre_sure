@@ -18,7 +18,8 @@ import {
     User,
     Key,
     StickyNote,
-    Tag as TagIcon
+    Tag as TagIcon,
+    LockKeyhole
 } from 'lucide-vue-next';
 import { ref, computed } from 'vue';
 
@@ -184,7 +185,8 @@ const quickActions = {
                     <TableRow v-for="entry in entries" :key="entry.id">
                         <TableCell class="font-medium">
                             <div class="flex items-center gap-2">
-                                <SquareAsterisk class="h-6 w-6" />
+                                
+                                <LockKeyhole class="h-6 w-6" />
                                 <Star v-if="entry.favorite" class="h-4 w-4 fill-yellow-400 text-yellow-400" />
                             </div>
                         </TableCell>
@@ -248,12 +250,12 @@ const quickActions = {
 
             <!-- Entry Detail Sheet -->
             <Sheet v-model:open="isSheetOpen" @update:open="value => !value && closeSheet()">
-                <SheetContent class="w-[600px] sm:max-w-[600px] overflow-y-auto">
-                    <SheetHeader>
-                        <div class="flex items-center justify-between">
+                <SheetContent class="w-[600px] sm:max-w-[600px] overflow-y-auto p-6">
+                    <SheetHeader class="px-0">
+                        <div class="flex items-center justify-between ">
                             <div>
-                                <SheetTitle class="flex items-center gap-2">
-                                    <SquareAsterisk class="h-5 w-5" />
+                                <SheetTitle class="flex items-center gap-2  ">
+                                    <LockKeyhole class="h-5 w-5" />
                                     {{ selectedEntry?.title }}
                                 </SheetTitle>
                                 <SheetDescription>
@@ -272,7 +274,7 @@ const quickActions = {
                         </div>
                     </SheetHeader>
 
-                    <div v-if="selectedEntry" class="space-y-6 p-6">
+                    <div v-if="selectedEntry" class="space-y-6  ">
 
                         <!-- Basic Information -->
                         <div class="space-y-4">
