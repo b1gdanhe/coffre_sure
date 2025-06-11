@@ -15,11 +15,6 @@ const settingItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
-        title: 'Coffre fort',
-        href: '/coffre-fort',
-        icon: Vault,
-    },
-    {
         title: 'Utilisateurs',
         href: '/utilisateurs',
         icon: UserIcon,

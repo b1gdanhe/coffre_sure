@@ -3,49 +3,33 @@ import AdminLayout from '@/layouts/AdminLayout.vue';
 import type { BreadcrumbItem, Entry } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import {
-    EllipsisVertical,
-    SquareAsterisk,
     Copy,
+    Edit,
+    EllipsisVertical,
     ExternalLink,
     Eye,
     EyeOff,
+    Globe,
+    Key,
+    LockKeyhole,
     Share2,
     Star,
-    StarOff,
-    Edit,
-    Trash2,
-    Globe,
-    User,
-    Key,
     StickyNote,
     Tag as TagIcon,
-    LockKeyhole
+    Trash2,
+    User,
 } from 'lucide-vue-next';
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
 
 import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import {
-    Sheet,
-    SheetContent,
-    SheetDescription,
-    SheetFooter,
-    SheetHeader,
-    SheetTitle,
-    SheetClose
-} from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu';
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Textarea } from '@/components/ui/textarea';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -69,9 +53,7 @@ const isEditMode = ref(false);
 // Computed properties
 const maskedPassword = computed(() => {
     if (!selectedEntry.value?.password) return '';
-    return isPasswordVisible.value
-        ? selectedEntry.value.password
-        : '•'.repeat(selectedEntry.value.password.length);
+    return isPasswordVisible.value ? selectedEntry.value.password : '•'.repeat(selectedEntry.value.password.length);
 });
 
 const hasUrl = computed(() => {
@@ -132,12 +114,12 @@ const toggleFavorite = async () => {
 
 const shareEntry = () => {
     // Implement sharing logic
-    console.log('Partage de l\'identifiant');
+    console.log("Partage de l'identifiant");
 };
 
 const deleteEntry = () => {
     // Implement delete logic with confirmation
-    console.log('Suppression de l\'identifiant');
+    console.log("Suppression de l'identifiant");
 };
 
 const saveEntryChanges = async () => {
@@ -150,7 +132,7 @@ const saveEntryChanges = async () => {
 
 // Quick actions for table rows
 const quickActions = {
-    copyUsername: (entry: Entry) => copyToClipboard(entry.username || '', 'Nom d\'utilisateur'),
+    copyUsername: (entry: Entry) => copyToClipboard(entry.username || '', "Nom d'utilisateur"),
     copyPassword: (entry: Entry) => copyToClipboard(entry.password || '', 'Mot de passe'),
     openUrl: (entry: Entry) => {
         if (entry.url) {
@@ -158,14 +140,107 @@ const quickActions = {
             if (!url.startsWith('http://') && !url.startsWith('https://')) {
                 url = 'https://' + url;
             }
+
+            // Préremplir les champs si possible
+            if (entry.username || entry.password) {
+                // Vérifiez si l'URL contient déjà des paramètres de requête
+                const separator = url.includes('?') ? '&' : '?';
+
+                // Ajout des paramètres de requête pour username et password
+                // Attention : ceci suppose que le site Web cible prend en charge ces paramètres
+                const params = [];
+                if (entry.username) params.push(`username=${encodeURIComponent(entry.username)}`);
+                if (entry.password) params.push(`password=${encodeURIComponent(entry.password)}`);
+
+                url = `${url}${separator}${params.join('&')}`;
+            }
+
+            // Correction d'une faute de frappe ici : 'urtl' -> 'url'
             window.open(url, '_blank');
         }
-    }
+    },
+    openAndFill: (entry: Entry) => {
+        if (entry.url) {
+            let url = entry.url;
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'https://' + url;
+            }
+
+            // Ouvrir l'URL
+            const newWindow = window.open(url, '_blank');
+
+            // Attendre que la page se charge puis essayer de pré-remplir
+            if (newWindow) {
+                setTimeout(() => {
+                    try {
+                        // Tentative de pré-remplissage (limité par les politiques CORS)
+                        const doc = newWindow.document;
+
+                        // Chercher les champs de connexion courants
+                        const usernameFields = doc.querySelectorAll('input[type="text"], input[type="email"], input[name*="user"], input[name*="login"], input[name*="email"]');
+                        const passwordFields = doc.querySelectorAll('input[type="password"]');
+
+                        if (usernameFields.length > 0 && entry.username) {
+                            (usernameFields[0] as HTMLInputElement).value = entry.username;
+                        }
+
+                        if (passwordFields.length > 0 && entry.password) {
+                            (passwordFields[0] as HTMLInputElement).value = entry.password;
+                        }
+                    } catch (error) {
+                        console.warn('Impossible de pré-remplir les champs à cause des restrictions CORS:', error);
+                    }
+                }, 2000);
+            }
+        }
+    },
+    generateBookmarklet: (entry: Entry) => {
+        const bookmarkletCode = `
+            javascript:(function(){
+                var username = '${entry.username?.replace(/'/g, "\\'")}';
+                var password = '${entry.password?.replace(/'/g, "\\'")}';
+
+                // Chercher et remplir les champs
+                var usernameField = document.querySelector('input[type="text"], input[type="email"], input[name*="user"], input[name*="login"], input[name*="email"], input[id*="user"], input[id*="login"]');
+                var passwordField = document.querySelector('input[type="password"]');
+
+                if (usernameField && username) {
+                    usernameField.value = username;
+                    usernameField.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+
+                if (passwordField && password) {
+                    passwordField.value = password;
+                    passwordField.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+
+                alert('Champs pré-remplis !');
+            })();
+        `;
+
+        // Copier le bookmarklet dans le presse-papier
+        copyToClipboard(bookmarkletCode, 'Bookmarklet copié - Ajoutez-le à vos favoris');
+    },
+
+    openWithInstructions: (entry: Entry) => {
+        if (entry.url) {
+            let url = entry.url;
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'https://' + url;
+            }
+
+            // Ouvrir l'URL
+            window.open(url, '_blank');
+
+            // Copier les identifiants pour faciliter le collage manuel
+            const credentials = `Nom d'utilisateur: ${entry.username}\nMot de passe: ${entry.password}`;
+            copyToClipboard(credentials, 'Identifiants copiés dans le presse-papier');
+        }
+    },
 };
 </script>
 
 <template>
-
     <Head title="Coffre fort" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
@@ -185,7 +260,6 @@ const quickActions = {
                     <TableRow v-for="entry in entries" :key="entry.id">
                         <TableCell class="font-medium">
                             <div class="flex items-center gap-2">
-                                
                                 <LockKeyhole class="h-6 w-6" />
                                 <Star v-if="entry.favorite" class="h-4 w-4 fill-yellow-400 text-yellow-400" />
                             </div>
@@ -195,8 +269,8 @@ const quickActions = {
                                 <div class="flex items-center gap-2">
                                     <span>{{ entry.title }}</span>
                                 </div>
-                                <div class="text-neutral-500 text-sm">{{ entry.url }}</div>
-                                <div class="text-neutral-400 text-xs">{{ entry.username }}</div>
+                                <div class="text-sm text-neutral-500">{{ entry.url }}</div>
+                                <div class="text-xs text-neutral-400">{{ entry.username }}</div>
                             </div>
                         </TableCell>
                         <TableCell class="font-medium">{{ entry.last_used || 'Jamais' }}</TableCell>
@@ -206,18 +280,27 @@ const quickActions = {
                         <TableCell class="font-medium">
                             <div class="flex items-center justify-end gap-1">
                                 <!-- Quick action buttons -->
-                                <Button v-if="entry.username" variant="ghost" size="icon"
-                                    @click="quickActions.copyUsername(entry)" title="Copier l'identifiant">
+                                <Button
+                                    v-if="entry.username"
+                                    variant="ghost"
+                                    size="icon"
+                                    @click="quickActions.copyUsername(entry)"
+                                    title="Copier l'identifiant"
+                                >
                                     <User class="h-4 w-4" />
                                 </Button>
 
-                                <Button v-if="entry.password" variant="ghost" size="icon"
-                                    @click="quickActions.copyPassword(entry)" title="Copier le mot de passe">
+                                <Button
+                                    v-if="entry.password"
+                                    variant="ghost"
+                                    size="icon"
+                                    @click="quickActions.copyPassword(entry)"
+                                    title="Copier le mot de passe"
+                                >
                                     <Key class="h-4 w-4" />
                                 </Button>
 
-                                <Button v-if="entry.url" variant="ghost" size="icon"
-                                    @click="quickActions.openUrl(entry)" title="Ouvrir l'URL">
+                                <Button v-if="entry.url" variant="ghost" size="icon" @click="quickActions.openUrl(entry)" title="Ouvrir l'URL">
                                     <ExternalLink class="h-4 w-4" />
                                 </Button>
 
@@ -249,22 +332,21 @@ const quickActions = {
             </Table>
 
             <!-- Entry Detail Sheet -->
-            <Sheet v-model:open="isSheetOpen" @update:open="value => !value && closeSheet()">
-                <SheetContent class="w-[600px] sm:max-w-[600px] overflow-y-auto p-6">
+            <Sheet v-model:open="isSheetOpen" @update:open="(value) => !value && closeSheet()">
+                <SheetContent class="w-[600px] overflow-y-auto p-6 sm:max-w-[600px]">
                     <SheetHeader class="px-0">
-                        <div class="flex items-center justify-between ">
+                        <div class="flex items-center justify-between">
                             <div>
-                                <SheetTitle class="flex items-center gap-2  ">
+                                <SheetTitle class="flex items-center gap-2">
                                     <LockKeyhole class="h-5 w-5" />
                                     {{ selectedEntry?.title }}
                                 </SheetTitle>
                                 <SheetDescription>
-                                    {{ isEditMode ? 'Modifier les informations' : 'Détails de l\'identifiant' }}
+                                    {{ isEditMode ? 'Modifier les informations' : "Détails de l'identifiant" }}
                                 </SheetDescription>
                             </div>
-                            <div class="flex items-center gap-2 ">
-                                <Button variant="ghost" size="icon" @click="toggleFavorite"
-                                    :class="selectedEntry?.favorite ? 'text-yellow-500' : ''">
+                            <div class="flex items-center gap-2">
+                                <Button variant="ghost" size="icon" @click="toggleFavorite" :class="selectedEntry?.favorite ? 'text-yellow-500' : ''">
                                     <Star :class="selectedEntry?.favorite ? 'fill-current' : ''" class="h-4 w-4" />
                                 </Button>
                                 <Button variant="ghost" size="icon" @click="toggleEditMode">
@@ -274,30 +356,30 @@ const quickActions = {
                         </div>
                     </SheetHeader>
 
-                    <div v-if="selectedEntry" class="space-y-6  ">
-
+                    <div v-if="selectedEntry" class="space-y-6">
                         <!-- Basic Information -->
                         <div class="space-y-4">
                             <h3 class="text-lg font-semibold">Informations générales</h3>
 
                             <div class="grid grid-cols-4 items-center gap-4">
-                                <Label for="title" class="text-right font-medium">
-                                    Titre
-                                </Label>
-                                <Input id="title" v-model="selectedEntry.title" class="col-span-3"
-                                    :readonly="!isEditMode" />
+                                <Label for="title" class="text-right font-medium"> Titre </Label>
+                                <Input id="title" v-model="selectedEntry.title" class="col-span-3" :readonly="!isEditMode" />
                             </div>
 
                             <div class="grid grid-cols-4 items-center gap-4">
                                 <Label for="url" class="text-right font-medium">
-                                    <Globe class="inline h-4 w-4 mr-1" />
+                                    <Globe class="mr-1 inline h-4 w-4" />
                                     URL
                                 </Label>
                                 <div class="col-span-3 flex gap-2">
-                                    <Input id="url" v-model="selectedEntry.url" class="flex-1" :readonly="!isEditMode"
-                                        placeholder="https://example.com" />
-                                    <Button v-if="hasUrl" variant="outline" size="icon" @click="openUrl"
-                                        title="Ouvrir l'URL">
+                                    <Input
+                                        id="url"
+                                        v-model="selectedEntry.url"
+                                        class="flex-1"
+                                        :readonly="!isEditMode"
+                                        placeholder="https://example.com"
+                                    />
+                                    <Button v-if="hasUrl" variant="outline" size="icon" @click="openUrl" title="Ouvrir l'URL">
                                         <ExternalLink class="h-4 w-4" />
                                     </Button>
                                 </div>
@@ -312,15 +394,18 @@ const quickActions = {
 
                             <div class="grid grid-cols-4 items-center gap-4">
                                 <Label for="username" class="text-right font-medium">
-                                    <User class="inline h-4 w-4 mr-1" />
+                                    <User class="mr-1 inline h-4 w-4" />
                                     Utilisateur
                                 </Label>
                                 <div class="col-span-3 flex gap-2">
-                                    <Input id="username" v-model="selectedEntry.username" class="flex-1"
-                                        :readonly="!isEditMode" />
-                                    <Button v-if="selectedEntry.username" variant="outline" size="icon"
+                                    <Input id="username" v-model="selectedEntry.username" class="flex-1" :readonly="!isEditMode" />
+                                    <Button
+                                        v-if="selectedEntry.username"
+                                        variant="outline"
+                                        size="icon"
                                         @click="copyToClipboard(selectedEntry.username, 'Nom d\'utilisateur')"
-                                        title="Copier l'identifiant">
+                                        title="Copier l'identifiant"
+                                    >
                                         <Copy class="h-4 w-4" />
                                     </Button>
                                 </div>
@@ -328,22 +413,29 @@ const quickActions = {
 
                             <div class="grid grid-cols-4 items-center gap-4">
                                 <Label for="password" class="text-right font-medium">
-                                    <Key class="inline h-4 w-4 mr-1" />
+                                    <Key class="mr-1 inline h-4 w-4" />
                                     Mot de passe
                                 </Label>
                                 <div class="col-span-3 flex gap-2">
-                                    <Input id="password" :value="isEditMode ? selectedEntry.password : maskedPassword"
+                                    <Input
+                                        id="password"
+                                        :value="isEditMode ? selectedEntry.password : maskedPassword"
                                         @input="isEditMode && (selectedEntry.password = $event.target.value)"
-                                        :type="isEditMode ? 'text' : 'password'" class="flex-1"
-                                        :readonly="!isEditMode" />
-                                    <Button variant="outline" size="icon" @click="togglePasswordVisibility"
-                                        title="Afficher/Masquer le mot de passe">
+                                        :type="isEditMode ? 'text' : 'password'"
+                                        class="flex-1"
+                                        :readonly="!isEditMode"
+                                    />
+                                    <Button variant="outline" size="icon" @click="togglePasswordVisibility" title="Afficher/Masquer le mot de passe">
                                         <Eye v-if="!isPasswordVisible" class="h-4 w-4" />
                                         <EyeOff v-else class="h-4 w-4" />
                                     </Button>
-                                    <Button v-if="selectedEntry.password" variant="outline" size="icon"
+                                    <Button
+                                        v-if="selectedEntry.password"
+                                        variant="outline"
+                                        size="icon"
                                         @click="copyToClipboard(selectedEntry.password, 'Mot de passe')"
-                                        title="Copier le mot de passe">
+                                        title="Copier le mot de passe"
+                                    >
                                         <Copy class="h-4 w-4" />
                                     </Button>
                                 </div>
@@ -358,7 +450,7 @@ const quickActions = {
 
                             <div class="grid grid-cols-4 items-center gap-4">
                                 <Label for="category" class="text-right font-medium">
-                                    <TagIcon class="inline h-4 w-4 mr-1" />
+                                    <TagIcon class="mr-1 inline h-4 w-4" />
                                     Catégorie
                                 </Label>
                                 <div class="col-span-3">
@@ -367,12 +459,18 @@ const quickActions = {
                             </div>
 
                             <div class="grid grid-cols-4 items-start gap-4">
-                                <Label for="notes" class="text-right font-medium pt-2">
-                                    <StickyNote class="inline h-4 w-4 mr-1" />
+                                <Label for="notes" class="pt-2 text-right font-medium">
+                                    <StickyNote class="mr-1 inline h-4 w-4" />
                                     Notes
                                 </Label>
-                                <Textarea id="notes" v-model="selectedEntry.notes" class="col-span-3"
-                                    :readonly="!isEditMode" placeholder="Ajouter des notes..." rows="3" />
+                                <Textarea
+                                    id="notes"
+                                    v-model="selectedEntry.notes"
+                                    class="col-span-3"
+                                    :readonly="!isEditMode"
+                                    placeholder="Ajouter des notes..."
+                                    rows="3"
+                                />
                             </div>
                         </div>
 
@@ -396,7 +494,7 @@ const quickActions = {
                     </div>
 
                     <SheetFooter class="flex gap-2">
-                        <div class="flex-1 flex gap-2">
+                        <div class="flex flex-1 gap-2">
                             <Button variant="outline" @click="shareEntry" class="flex-1">
                                 <Share2 class="mr-2 h-4 w-4" />
                                 Partager
@@ -409,18 +507,13 @@ const quickActions = {
 
                         <div class="flex gap-2">
                             <SheetClose asChild>
-                                <Button variant="outline" @click="closeSheet">
-                                    Fermer
-                                </Button>
+                                <Button variant="outline" @click="closeSheet"> Fermer </Button>
                             </SheetClose>
-                            <Button v-if="isEditMode" @click="saveEntryChanges" class="bg-blue-600 hover:bg-blue-700">
-                                Enregistrer
-                            </Button>
+                            <Button v-if="isEditMode" @click="saveEntryChanges" class="bg-blue-600 hover:bg-blue-700"> Enregistrer </Button>
                         </div>
                     </SheetFooter>
                 </SheetContent>
             </Sheet>
-
         </div>
     </AdminLayout>
 </template>
